@@ -19,11 +19,13 @@ package org.bitcoinj.script;
 import com.google.common.collect.Lists;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.ScriptException;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.TransactionSignature;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,7 +53,11 @@ public class ScriptBuilder {
 		  return data;
 	  }
     private List<ScriptChunk> chunks;
-
+    private static BigInteger castToBigInteger(byte[] chunk) throws ScriptException {
+        if (chunk.length > 4)
+            throw new ScriptException("Script attempted to use an integer larger than 4 bytes");
+        return Utils.decodeMPI(Utils.reverseBytes(chunk), false);
+    }
     /** Creates a fresh ScriptBuilder with an empty program. */
     public ScriptBuilder() {
         chunks = Lists.newLinkedList();
@@ -362,7 +368,18 @@ public class ScriptBuilder {
         //System.out.println(new byte[] {1});
         //File part1=new File("/home/mqadri/Desktop/part1.txt");
         //File part2=new File("/home/mqadri/Desktop/part2.txt");
-        return new ScriptBuilder().data(hexStringToByteArray("31D5E3A6775EC192DD25468D91200A99")).data(sigBytes).data(pubkeyBytes).data(hexStringToByteArray("FF")).build();
+        long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
+        BigInteger l=new BigInteger(Long.toString(timestamp).substring(0, 10));
+        //System.out.println(l);
+    	BigInteger k=castToBigInteger(script.chunks.get(10).data) ;
+    	if (k.compareTo(l) > 0 ){
+            return new ScriptBuilder().data(hexStringToByteArray("31D5E3A6775EC192DD25468D91200A99")).data(sigBytes).data(pubkeyBytes).data(hexStringToByteArray("FF")).build();
+    	}
+    	else{
+          //  System.out.println(chunks.get(15));
+
+        	return new ScriptBuilder().data(sigBytes).data(pubkeyBytes).data(hexStringToByteArray("00")).build();
+    	}
     }
     /**
      * Returns a copy of the given scriptSig with the signature inserted in the given position.

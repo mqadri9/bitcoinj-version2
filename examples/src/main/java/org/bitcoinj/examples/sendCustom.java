@@ -68,10 +68,9 @@ public class sendCustom {
 				Transaction tx = new Transaction(params);    
 				byte[] checksum=hexStringToByteArray(checkSumArray[i]);
 				BigInteger time;
-				time=BigInteger.valueOf(1480568338);
+				time=BigInteger.valueOf(1480922538);
 		        byte[] timeBytes = Utils.reverseBytes(Utils.encodeMPI(time, false));
 				Script locking = new ScriptBuilder()
-
 						.op(OP_IF)
 							.op(OP_DUP)
 							.op(OP_HASH160)

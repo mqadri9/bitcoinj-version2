@@ -3989,8 +3989,13 @@ public class Wallet extends BaseTaggableObject
                 req.tx.getOutput(0).setValue(bestCoinSelection.valueGathered);
                 log.info("  emptying {}", bestCoinSelection.valueGathered.toFriendlyString());
             }
+            int i=0;
             for (TransactionOutput output : bestCoinSelection.gathered){
                 req.tx.addInput(output);
+                if(output.getScriptPubKey().isTimeLockChecksumTx()){
+                	req.tx.getInput(i).setSequenceNumber(0);
+                }
+                i=i+1;
             }
             if (req.emptyWallet) {
                 final Coin feePerKb = req.feePerKb == null ? Coin.ZERO : req.feePerKb;
@@ -4016,7 +4021,7 @@ public class Wallet extends BaseTaggableObject
             final int size = req.tx.unsafeBitcoinSerialize().length;
             if (size > Transaction.MAX_STANDARD_TX_SIZE)
                 throw new ExceededMaxTransactionSize();
-
+            
             final Coin calculatedFee = req.tx.getFee();
             if (calculatedFee != null)
                 log.info("  with a fee of {}/kB, {} for {} bytes",
@@ -4034,6 +4039,7 @@ public class Wallet extends BaseTaggableObject
             // Record the exchange rate that was valid when the transaction was completed.
             req.tx.setExchangeRate(req.exchangeRate);
             req.tx.setMemo(req.memo);
+
             req.completed = true;
             log.info("  completed: {}", req.tx);
         } finally {

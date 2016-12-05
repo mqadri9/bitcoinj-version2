@@ -64,8 +64,8 @@ public class reqtx2 {
         wallet4.awaitRunning();
         Transaction temp;
 
-        Path path1=Paths.get("/home/mqadri/Desktop/part1.txt");
-        Path path2=Paths.get("/home/mqadri/Desktop/part2.txt");
+        //Path path1=Paths.get("/home/mqadri/Desktop/part1.txt");
+        //Path path2=Paths.get("/home/mqadri/Desktop/part2.txt");
 
         
        
